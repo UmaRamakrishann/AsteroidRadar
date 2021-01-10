@@ -1,16 +1,18 @@
 package com.udacity.asteroidradar.api
 
-import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.network.NetworkAsteroid
+import com.udacity.asteroidradar.network.NetworkAsteroidContainer
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
+fun parseAsteroidsJsonResult(jsonResult: JSONObject): NetworkAsteroidContainer {
     val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
 
-    val asteroidList = ArrayList<Asteroid>()
+    val asteroidList = ArrayList<NetworkAsteroid>()
 
     val nextSevenDaysFormattedDates = getNextSevenDaysFormattedDates()
     for (formattedDate in nextSevenDaysFormattedDates) {
@@ -33,13 +35,15 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
             val isPotentiallyHazardous = asteroidJson
                 .getBoolean("is_potentially_hazardous_asteroid")
 
-            val asteroid = Asteroid(id, codename, formattedDate, absoluteMagnitude,
-                estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous)
+            val asteroid = NetworkAsteroid(
+                id, codename, formattedDate, absoluteMagnitude,
+                estimatedDiameter, relativeVelocity, distanceFromEarth, isPotentiallyHazardous
+            )
             asteroidList.add(asteroid)
         }
     }
 
-    return asteroidList
+    return NetworkAsteroidContainer(asteroidList)
 }
 
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
@@ -54,4 +58,30 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     }
 
     return formattedDateList
+}
+
+fun getToday() : String{
+    val calendar =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"), Locale.US)
+    val currentTime = calendar.time
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.US)
+    return dateFormat.format(currentTime)
+}
+
+fun getDatePastSevenDays() : String{
+    val calendar =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"), Locale.US)
+    calendar.add(Calendar.DAY_OF_YEAR,- 7)
+    val pastSevenDaysTime = calendar.time
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.US)
+    return dateFormat.format(pastSevenDaysTime)
+}
+
+fun getEndDate(): String {
+    val calendar =
+        Calendar.getInstance(TimeZone.getTimeZone("America/New_York"), Locale.US)
+    calendar.add(Calendar.DAY_OF_YEAR, 7)
+    val endTime = calendar.time
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.US)
+    return dateFormat.format(endTime)
 }

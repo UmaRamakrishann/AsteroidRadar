@@ -1,67 +1,44 @@
 package com.udacity.asteroidradar.main
 
+import android.app.Application
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.Constants
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
-import com.udacity.asteroidradar.network.Network
+import com.udacity.asteroidradar.api.getEndDate
+import com.udacity.asteroidradar.api.getToday
+import com.udacity.asteroidradar.database.AsteroidDisplayFilter
+import com.udacity.asteroidradar.database.getDatabase
+import com.udacity.asteroidradar.domain.Asteroid
+import com.udacity.asteroidradar.domain.PictureOfDay
+import com.udacity.asteroidradar.network.NasaImage
+import com.udacity.asteroidradar.repository.AsteroidsRepository
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import timber.log.Timber
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-	private val _asteroids = MutableLiveData<List<Asteroid>>()
-
-	val asteroids: LiveData<List<Asteroid>>
-		get() = _asteroids
-
+	private val database = getDatabase(application)
+	private val asteroidsRepository = AsteroidsRepository(database)
 	private val _navigateToSelectedAsteroid = MutableLiveData<Asteroid>()
+	private val startDate = getToday()
+	private val endDate = getEndDate()
+
+	var asteroids = asteroidsRepository.getTodayAsteroids()
+
 	val navigateToSelectedAsteroid: LiveData<Asteroid>
 		get() = _navigateToSelectedAsteroid
 
+	private val _pictureOfDay = MutableLiveData<PictureOfDay>()
+	val pictureOfDay: LiveData<PictureOfDay>
+		get() = _pictureOfDay
+
 	init {
-		getAsteroidsForToday()
-	}
-
-	private fun getAsteroidsForToday() {
-		viewModelScope.launch {
-			try {
-				val calendar = Calendar.getInstance()
-				val currentTime = calendar.time
-				val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
-				calendar.add(Calendar.DAY_OF_YEAR, 1)
-				val tomorrowTime = calendar.time
-
-				Network.asteroids.getAsteroids(
-					"vkYXEwFM6pn1RCHeRLjnangdwDt2rY5XxqauSJVg",
-					"2021-01-08",
-					"2021-01-09"
-				).enqueue(object : Callback<String> {
-					override fun onFailure(call: Call<String>, t: Throwable) {
-						_asteroids.value = ArrayList()
-					}
-
-					override fun onResponse(call: Call<String>, response: Response<String>) {
-						val jsonObject = JSONObject(response.body())
-						_asteroids.value = parseAsteroidsJsonResult(jsonObject)
-					}
-				})
-
-				//_status.value = MarsApiStatus.DONE
-			} catch (e: Exception) {
-				//_status.value = MarsApiStatus.ERROR
-				_asteroids.value = ArrayList()
-			}
-		}
+		val apiKey = "vkYXEwFM6pn1RCHeRLjnangdwDt2rY5XxqauSJVg"
+		viewModelScope.launch { asteroidsRepository.refreshAsteroids(apiKey, startDate, endDate) }
+		asteroids = asteroidsRepository.getTodayAsteroids()
+		getPictureOfDay(apiKey)
 	}
 
 	fun displayAsteroidDetails(asteroid: Asteroid) {
@@ -70,6 +47,25 @@ class MainViewModel : ViewModel() {
 
 	fun displayAsteroidDetailsComplete() {
 		_navigateToSelectedAsteroid.value = null
+	}
+
+	private fun getPictureOfDay(apiKey: String) {
+		viewModelScope.launch {
+			try {
+				_pictureOfDay.value = NasaImage.pictureOfDay.getPictureOfDay(apiKey)
+			} catch (e: Exception) {
+				Timber.e("No Internet")
+			}
+		}
+	}
+
+	fun updateFilter(filter: AsteroidDisplayFilter) {
+		when (filter) {
+			AsteroidDisplayFilter.SHOW_TODAY -> asteroids = asteroidsRepository.getTodayAsteroids()
+			AsteroidDisplayFilter.SHOW_WEEKLY -> asteroids = asteroidsRepository.getWeeklyAsteroids()
+			else -> asteroids = asteroidsRepository.getAllAsteroids()
+		}
+		Timber.e("Asteroids Size" + asteroids.value?.size.toString())
 	}
 
 }

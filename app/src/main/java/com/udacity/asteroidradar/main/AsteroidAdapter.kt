@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.AsteroidItemBinding
 
-class AsteroidAdapter(val onClickListener: OnClickListener) :
+class AsteroidAdapter(val callback: AsteroidClick) :
 	RecyclerView.Adapter<AsteroidAdapter.AsteroidViewHolder>() {
 
 	/**
@@ -18,10 +18,6 @@ class AsteroidAdapter(val onClickListener: OnClickListener) :
 	var asteroids: List<Asteroid> = emptyList()
 		set(value) {
 			field = value
-			// For an extra challenge, update this to use the paging library.
-
-			// Notify any registered observers that the data set has changed. This will cause every
-			// element in our RecyclerView to be invalidated.
 			notifyDataSetChanged()
 		}
 
@@ -49,7 +45,7 @@ class AsteroidAdapter(val onClickListener: OnClickListener) :
 	override fun onBindViewHolder(holder: AsteroidViewHolder, position: Int) {
 		holder.viewDataBinding.also {
 			it.asteroid = asteroids[position]
-
+			it.asteroidCallback = callback
 		}
 	}
 
@@ -62,8 +58,14 @@ class AsteroidAdapter(val onClickListener: OnClickListener) :
 		}
 	}
 
-	class OnClickListener(val clickListener: (asteroid: Asteroid) -> Unit) {
-		fun onClick(asteroid: Asteroid) = clickListener(asteroid)
+	class AsteroidClick(val block: (Asteroid) -> Unit) {
+		/**
+		 * Called when a asteroid is clicked
+		 *
+		 * @param asteroid the asteroid that was clicked
+		 */
+		fun onClick(asteroid: Asteroid) = block(asteroid)
 	}
+
 
 }
