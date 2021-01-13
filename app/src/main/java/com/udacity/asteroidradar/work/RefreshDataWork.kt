@@ -3,13 +3,14 @@ package com.udacity.asteroidradar.work
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.udacity.asteroidradar.BuildConfig
 import com.udacity.asteroidradar.api.getEndDate
 import com.udacity.asteroidradar.api.getToday
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.repository.AsteroidsRepository
 import retrofit2.HttpException
 
-class RefreshDataWorker(appContext: Context, params: WorkerParameters):
+class RefreshDataWorker(appContext: Context, params: WorkerParameters) :
 	CoroutineWorker(appContext, params) {
 
 
@@ -19,7 +20,7 @@ class RefreshDataWorker(appContext: Context, params: WorkerParameters):
 		return try {
 			val startDate = getToday()
 			val endDate = getEndDate()
-			val apiKey = "vkYXEwFM6pn1RCHeRLjnangdwDt2rY5XxqauSJVg"
+			val apiKey = BuildConfig.API_KEY
 			repository.refreshAsteroids(apiKey, startDate, endDate)
 			Result.success()
 		} catch (e: HttpException) {

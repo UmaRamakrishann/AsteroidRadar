@@ -10,6 +10,7 @@ import retrofit2.http.Query
  * A retrofit service to fetch the Asteroid data
  */
 interface AsteroidRadarService {
+
 	@GET("neo/rest/v1/feed")
 	suspend fun getAsteroids(
 		@Query("api_key") apiKey: String,

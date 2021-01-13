@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.AsteroidItemBinding
+import com.udacity.asteroidradar.domain.Asteroid
 
 class AsteroidAdapter(val callback: AsteroidClick) :
 	RecyclerView.Adapter<AsteroidAdapter.AsteroidViewHolder>() {
@@ -66,6 +66,5 @@ class AsteroidAdapter(val callback: AsteroidClick) :
 		 */
 		fun onClick(asteroid: Asteroid) = block(asteroid)
 	}
-
 
 }

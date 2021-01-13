@@ -7,12 +7,14 @@ import com.udacity.asteroidradar.work.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 /**
  * Override application to setup background work via WorkManager
  */
 class AsteroidRadarApplication : Application() {
+
 	val applicationScope = CoroutineScope(Dispatchers.Default)
 
 	private fun delayedInit() = applicationScope.launch {
@@ -37,8 +39,10 @@ class AsteroidRadarApplication : Application() {
 		WorkManager.getInstance().enqueueUniquePeriodicWork(
 			RefreshDataWorker.WORK_NAME,
 			ExistingPeriodicWorkPolicy.KEEP,
-			repeatingRequest)
+			repeatingRequest
+		)
 	}
+
 	/**
 	 * onCreate is called before the first screen is shown to the user.
 	 *
@@ -48,5 +52,6 @@ class AsteroidRadarApplication : Application() {
 	override fun onCreate() {
 		super.onCreate()
 		delayedInit()
+		Timber.plant(Timber.DebugTree())
 	}
 }

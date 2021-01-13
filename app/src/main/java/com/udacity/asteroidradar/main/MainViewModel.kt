@@ -1,11 +1,11 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.udacity.asteroidradar.BuildConfig
 import com.udacity.asteroidradar.api.getEndDate
 import com.udacity.asteroidradar.api.getToday
 import com.udacity.asteroidradar.database.AsteroidDisplayFilter
@@ -35,9 +35,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 		get() = _pictureOfDay
 
 	init {
-		val apiKey = "vkYXEwFM6pn1RCHeRLjnangdwDt2rY5XxqauSJVg"
+		val apiKey = BuildConfig.API_KEY
 		viewModelScope.launch { asteroidsRepository.refreshAsteroids(apiKey, startDate, endDate) }
-		asteroids = asteroidsRepository.getTodayAsteroids()
 		getPictureOfDay(apiKey)
 	}
 
@@ -59,13 +58,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 		}
 	}
 
-	fun updateFilter(filter: AsteroidDisplayFilter) {
+	fun updateFilter(filter: AsteroidDisplayFilter): LiveData<List<Asteroid>> {
 		when (filter) {
 			AsteroidDisplayFilter.SHOW_TODAY -> asteroids = asteroidsRepository.getTodayAsteroids()
 			AsteroidDisplayFilter.SHOW_WEEKLY -> asteroids = asteroidsRepository.getWeeklyAsteroids()
 			else -> asteroids = asteroidsRepository.getAllAsteroids()
 		}
-		Timber.e("Asteroids Size" + asteroids.value?.size.toString())
+		return asteroids
 	}
 
 }

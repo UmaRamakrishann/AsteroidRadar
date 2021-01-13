@@ -9,10 +9,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.database.AsteroidDisplayFilter
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
+import com.udacity.asteroidradar.domain.Asteroid
 
 class MainFragment : Fragment() {
 
@@ -34,19 +34,20 @@ class MainFragment : Fragment() {
 		})
 
 		viewModel.navigateToSelectedAsteroid.observe(viewLifecycleOwner, Observer {
-			if ( null != it ) {
+			if (null != it) {
 				this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
 				viewModel.displayAsteroidDetailsComplete()
 			}
 		})
 
 		viewModel.pictureOfDay.observe(viewLifecycleOwner, Observer {
-			if (it.mediaType == "image"){
+			if (it.mediaType == "image") {
 				Picasso.get()
 					.load(it.url)
 					.placeholder(R.drawable.placeholder_picture_of_day)
 					.error(R.drawable.placeholder_picture_of_day)
 					.into(binding.activityMainImageOfTheDay)
+				binding.activityMainImageOfTheDay.contentDescription = it.title
 			}
 		})
 
@@ -66,11 +67,12 @@ class MainFragment : Fragment() {
 	 */
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		viewModel.asteroids.observe(viewLifecycleOwner, Observer<List<Asteroid>> { asteroids->
+		viewModel.asteroids.observe(viewLifecycleOwner, Observer<List<Asteroid>> { asteroids ->
 			asteroids?.apply {
 				viewModelAdapter?.asteroids = asteroids
 			}
 		})
+
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -79,13 +81,18 @@ class MainFragment : Fragment() {
 	}
 
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
 		viewModel.updateFilter(
 			when (item.itemId) {
 				R.id.show_week_menu -> AsteroidDisplayFilter.SHOW_WEEKLY
 				R.id.show_today_menu -> AsteroidDisplayFilter.SHOW_TODAY
 				else -> AsteroidDisplayFilter.SHOW_ALL
 			}
-		)
+		).observe(viewLifecycleOwner, Observer<List<Asteroid>> { asteroids ->
+			asteroids?.apply {
+				viewModelAdapter?.asteroids = asteroids
+			}
+		})
 		return true
 	}
 }

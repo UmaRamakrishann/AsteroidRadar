@@ -29,7 +29,8 @@
             android:textColor="@color/default_text_color"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@{asteroid.codename}"/>
 
         <TextView
             android:id="@+id/close_approach_date_main"
@@ -42,7 +43,8 @@
             android:textColor="@color/default_text_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/code_name" />
+            app:layout_constraintTop_toBottomOf="@+id/code_name"
+            android:contentDescription="@{asteroid.closeApproachDate}"/>
 
         <ImageView
             android:id="@+id/potentially_hazardous_image"

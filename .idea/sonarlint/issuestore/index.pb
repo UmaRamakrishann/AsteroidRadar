@@ -37,3 +37,7 @@ l
 <app/src/main/java/com/udacity/asteroidradar/database/Room.kt,f\5\f557c10b3de2259b186bc58e97c7c9334f0f702a
 }
 Mapp/src/main/java/com/udacity/asteroidradar/repository/AsteroidsRepository.kt,6\a\6aa6b4740e85f556b9425179d0cd2c868f0aa2b8
+<
+build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e

@@ -7,3 +7,5 @@ Use the updated Gradle version in the `~/gradle/wrapper/gradle-wrapper.propertie
 ```
 distributionUrl = https\://services.gradle.org/distributions/gradle-6.1.1-all.zip
 ```
+### TODO:
+The required build config parameters should be declared in the local.properties file in order to access them
