@@ -47,6 +47,8 @@ class AsteroidAdapter(val callback: AsteroidClick) :
 			it.asteroid = asteroids[position]
 			it.asteroidCallback = callback
 		}
+		holder.viewDataBinding.clickableOverlay.contentDescription = "Asteroid ${position}: " +
+				"${asteroids[position].codename}, with close approachDate of ${asteroids[position].closeApproachDate} "
 	}
 
 	class AsteroidViewHolder(val viewDataBinding: AsteroidItemBinding) :

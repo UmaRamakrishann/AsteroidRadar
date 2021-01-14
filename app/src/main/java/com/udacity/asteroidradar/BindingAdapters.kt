@@ -6,25 +6,21 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 
 @BindingAdapter("statusIcon")
-fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
-	if (isHazardous) {
-		imageView.setImageResource(R.drawable.ic_status_potentially_hazardous)
-		imageView.setContentDescription(R.string.potentially_hazardous_asteroid_icon.toString())
-	} else {
-		imageView.setImageResource(R.drawable.ic_status_normal)
-		imageView.setContentDescription(R.string.not_hazardous_asteroid_icon.toString())
-	}
+fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) = if (isHazardous) {
+	imageView.setImageResource(R.drawable.ic_status_potentially_hazardous)
+	imageView.setContentDescription("Potentially hazardous asteroid icon")
+} else {
+	imageView.setImageResource(R.drawable.ic_status_normal)
+	imageView.setContentDescription("Not hazardous asteroid icon")
 }
 
 @BindingAdapter("asteroidStatusImage")
-fun bindDetailsStatusImage(imageView: ImageView, isHazardous: Boolean) {
-	if (isHazardous) {
-		imageView.setImageResource(R.drawable.asteroid_hazardous)
-		imageView.setContentDescription(R.string.potentially_hazardous_asteroid_image.toString())
-	} else {
-		imageView.setImageResource(R.drawable.asteroid_safe)
-		imageView.setContentDescription(R.string.not_hazardous_asteroid_image.toString())
-	}
+fun bindDetailsStatusImage(imageView: ImageView, isHazardous: Boolean) = if (isHazardous) {
+	imageView.setImageResource(R.drawable.asteroid_hazardous)
+	imageView.setContentDescription("Potentially hazardous asteroid image")
+} else {
+	imageView.setImageResource(R.drawable.asteroid_safe)
+	imageView.setContentDescription("Not hazardous asteroid image")
 }
 
 @BindingAdapter("astronomicalUnitText")
